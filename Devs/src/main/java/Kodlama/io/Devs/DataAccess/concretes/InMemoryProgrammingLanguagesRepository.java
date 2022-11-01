@@ -13,7 +13,7 @@ public class InMemoryProgrammingLanguagesRepository implements IProgrammingLangu
 
 	List<ProgrammingLanguage> programmingLanguages ;
 	
-	//constructor parametresiz
+	//velevki veritabanından geldim.
 	public InMemoryProgrammingLanguagesRepository() {
 		super();
 		programmingLanguages= new ArrayList<ProgrammingLanguage>();	
@@ -37,47 +37,43 @@ public class InMemoryProgrammingLanguagesRepository implements IProgrammingLangu
 	}
 
 	@Override
-	public ProgrammingLanguage getProgrammingLanguageById(int programmingLanguageId) {
-// Varsa Programlama dilinin Id sini getirecek yoksa listedeki ID getirecek.Bilerek Throw eklemedim.
-		int objIndex=0;
-		for (ProgrammingLanguage obje : programmingLanguages) {
-			if (obje.getId()==programmingLanguageId) {
-			objIndex=programmingLanguages.indexOf(obje);
-			return programmingLanguages.get(objIndex);
+	public ProgrammingLanguage getProgrammingLanguageById(int programmingLanguageId) {		
+		for (ProgrammingLanguage programmingLanguage : getAll()) {
+			if (programmingLanguage.getId()==programmingLanguageId) {
+				return programmingLanguage ;
+				}
 			}
-					
-			
-		}
-		return programmingLanguages.get(programmingLanguageId);
+			return null ;
 	}
 
 	@Override
-	public ProgrammingLanguage addProgrammingLanguage(ProgrammingLanguage programmingLanguage) throws Exception {
-		
-		for (ProgrammingLanguage obje : programmingLanguages) {
-			if (obje.getName().equals(programmingLanguage.getName())) {
-				throw new Exception("Aynı isimde programlama dili tekrar eklenemez !");
-			}
-		}
-		programmingLanguages.add(programmingLanguage);
-		System.out.println(programmingLanguage.getName()+" Programlama Dili "+
-						   programmingLanguages.indexOf(programmingLanguage)+"index'e Eklendi.");
-		
-		return programmingLanguage ;
+	public void addProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
+		getAll().add(programmingLanguage);
+
 	}
 
 	@Override
-	public void deleteProgrammingLanguageById(int ProgrammingLanguageId) {
+	public void deleteProgrammingLanguageById(int programmingLanguageId) {
+		getAll().remove(getProgrammingLanguageById(programmingLanguageId));
 		
-		programmingLanguages.remove(ProgrammingLanguageId);
+		//sildiği halde hata-exception fırlattığı için Yorum satırına aldım. yerine bunu yazdım.
+		
+//		for (ProgrammingLanguage programmingLanguage : getAll()) {
+//			if (programmingLanguage.getId()==programmingLanguageId) {
+//				programmingLanguages.remove(getProgrammingLanguageById(programmingLanguageId));
+//				}
+//			}
 	}
 
 	@Override
-	public ProgrammingLanguage updateProgrammingLanguage(int Id, ProgrammingLanguage programmingLanguage) {
-		
-		programmingLanguages.set(Id,programmingLanguage);
-		
-		return programmingLanguage;
+	public void updateProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
+//		for (ProgrammingLanguage programmingLanguageObj : getAll()) {
+//			if (programmingLanguageObj.getId()==Id) {
+//			getAll().remove(programmingLanguageObj);
+//			getAll().add(programmingLanguage);
+//			}
+//		}
+	getProgrammingLanguageById(programmingLanguage.getId()).setName(programmingLanguage.getName()) ;	
 	}
 
 	

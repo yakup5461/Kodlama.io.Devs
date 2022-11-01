@@ -8,12 +8,12 @@ public interface IProgrammingLanguageService {
 	
 	List<ProgrammingLanguage> getAll( );
 	
-	ProgrammingLanguage getProgrammingLanguageById(int ProgrammingLanguageId);
+	ProgrammingLanguage getProgrammingLanguageById(int ProgrammingLanguageId) throws Exception;
 	
-	ProgrammingLanguage addProgrammingLanguage(ProgrammingLanguage programmingLanguage) throws Exception;
+	void addProgrammingLanguage(ProgrammingLanguage programmingLanguage) throws Exception;
 	
-	void deleteProgrammingLanguageById(int ProgrammingLanguageId);
+	void deleteProgrammingLanguageById(int ProgrammingLanguageId) throws Exception;
 	
-	ProgrammingLanguage updateProgrammingLanguage(int ProgrammingLanguageId , ProgrammingLanguage programmingLanguage);
+	void updateProgrammingLanguage(ProgrammingLanguage programmingLanguage) throws Exception;
 
 }

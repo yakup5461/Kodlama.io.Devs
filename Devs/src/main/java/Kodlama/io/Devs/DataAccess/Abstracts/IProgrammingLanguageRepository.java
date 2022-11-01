@@ -10,11 +10,11 @@ public interface IProgrammingLanguageRepository {
 	
 	ProgrammingLanguage getProgrammingLanguageById(int programmingLanguageId);
 	
-	ProgrammingLanguage addProgrammingLanguage (ProgrammingLanguage programmingLanguage) throws Exception;
+	void addProgrammingLanguage (ProgrammingLanguage programmingLanguage) ;
 	
 	void deleteProgrammingLanguageById(int ProgrammingLanguageId);
 	
-	ProgrammingLanguage updateProgrammingLanguage(int Id , ProgrammingLanguage programmingLanguage);
+	void updateProgrammingLanguage(ProgrammingLanguage programmingLanguage);
 	
 	
 }
