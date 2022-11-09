@@ -1,11 +1,15 @@
 package Kodlama.io.Devs.Businnes.concretes;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import Kodlama.io.Devs.Businnes.Abstracts.IProgrammingLanguageService;
+import Kodlama.io.Devs.Businnes.Requests.ProgrammingLanguageRequest.ProgrammingLanguageRequest;
+import Kodlama.io.Devs.Businnes.Responses.ProgrammingLanguageResponse.ProgrammingLanguageResponse;
 import Kodlama.io.Devs.DataAccess.Abstracts.IProgrammingLanguageRepository;
 import Kodlama.io.Devs.Entity.Concretes.ProgrammingLanguage;
 
@@ -14,15 +18,13 @@ public class ProgrammingLanguageManager implements IProgrammingLanguageService {
 	
 	private IProgrammingLanguageRepository programmingLanguageRepository ;
 	
-	
 	@Autowired
 	public ProgrammingLanguageManager(IProgrammingLanguageRepository programmingLanguageRepository) {
-		super();
 		this.programmingLanguageRepository = programmingLanguageRepository;
 	}
 
 	private boolean isIdExist(int Id) {
-		for(ProgrammingLanguage obje :programmingLanguageRepository.getAll()) {
+		for(ProgrammingLanguage obje :programmingLanguageRepository.findAll()) {
 			if(obje.getId()==Id) {
 				return true;
 			}
@@ -30,9 +32,9 @@ public class ProgrammingLanguageManager implements IProgrammingLanguageService {
 		return false;
 	}
 	
-	private boolean isNameExist(String name) {
-		for(ProgrammingLanguage obje :programmingLanguageRepository.getAll()) {
-			if(obje.getName()==name) {
+	public  boolean isNameExist(String name) {
+		for(ProgrammingLanguage obje :programmingLanguageRepository.findAll()) {
+			if(obje.getName().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}
@@ -43,43 +45,72 @@ public class ProgrammingLanguageManager implements IProgrammingLanguageService {
 		return name.isBlank();
 	}
 
+
 	@Override
-	public List<ProgrammingLanguage> getAll() {
-		return programmingLanguageRepository.getAll();
+	public List<ProgrammingLanguageResponse> getAll() {
+		List<ProgrammingLanguageResponse> listResponse = new ArrayList<ProgrammingLanguageResponse>() ;
+		for(ProgrammingLanguage obje:programmingLanguageRepository.findAll()) {
+			listResponse.add(new ProgrammingLanguageResponse(obje.getId(),obje.getName()));
+		}
+		
+		return listResponse;
 	}
 
 
 	@Override
-	public ProgrammingLanguage getProgrammingLanguageById(int programmingLanguageId) throws Exception {
+	public ProgrammingLanguageResponse getProgrammingLanguageById(int programmingLanguageId) throws Exception {
 		if(!isIdExist(programmingLanguageId)) {
 			throw new Exception("Girilen :"+ programmingLanguageId +" Id bulunamadı !");
 		}
-		return programmingLanguageRepository.getProgrammingLanguageById(programmingLanguageId);
+		ProgrammingLanguageResponse programmingLanguageResponse=new ProgrammingLanguageResponse();
+		
+		programmingLanguageResponse.setId(
+				programmingLanguageRepository.getProgrammingLanguageById(programmingLanguageId).getId());
+		
+		programmingLanguageResponse.setName(
+				programmingLanguageRepository.getProgrammingLanguageById(programmingLanguageId).getName());
+		
+		return programmingLanguageResponse; 
 	}
 
 
 	@Override
-	public void addProgrammingLanguage(ProgrammingLanguage programmingLanguage) throws Exception {
-		if(isIdExist(programmingLanguage.getId())) {throw new Exception(programmingLanguage.getId()+" ile Ekleme Yapılamaz !"); }
-		if(isNameBlank(programmingLanguage.getName())) {throw new Exception("Boş isim ile Ekleme Yapılamaz !");}
-		if(isNameExist(programmingLanguage.getName())) {throw new Exception(programmingLanguage.getName()+" Tekrar Eklenemez !");}
-		getAll().add(programmingLanguage);
+	public void add(ProgrammingLanguageRequest createProgrammingLanguage) throws Exception {
+
+		if(isNameBlank(createProgrammingLanguage.getName())) {throw new Exception("Boş isim ile Ekleme Yapılamaz !");}
+		if(isNameExist(createProgrammingLanguage.getName())) {throw new Exception(createProgrammingLanguage.getName()+" Tekrar Eklenemez !");}
+		
+		ProgrammingLanguage programmingLanguage =new ProgrammingLanguage();
+		programmingLanguage.setName(createProgrammingLanguage.getName());
+		
+		programmingLanguageRepository.save(programmingLanguage);
 	}
 
 
 	@Override
-	public void deleteProgrammingLanguageById(int ProgrammingLanguageId) throws Exception {
+	public void delete(int ProgrammingLanguageId) throws Exception {
 		if(!isIdExist(ProgrammingLanguageId)) {throw new Exception("Var olmayan :"+ProgrammingLanguageId +" Id ile silme işlemi Yapamazsınız !");}
-		programmingLanguageRepository.deleteProgrammingLanguageById(ProgrammingLanguageId);
+		programmingLanguageRepository.deleteById(ProgrammingLanguageId);
 	}
 
 
 	@Override
-	public void updateProgrammingLanguage(ProgrammingLanguage programmingLanguage)throws Exception {
-		if(!isIdExist(programmingLanguage.getId())) {throw new Exception("Grilen :"+programmingLanguage.getId()+" Id Bulunamadı !");}
-		if(isNameBlank(programmingLanguage.getName())) {throw new Exception("Boş isim ile Ekleme Yapılamaz !");}
-		programmingLanguageRepository. updateProgrammingLanguage(programmingLanguage);		
+	public void update(ProgrammingLanguageRequest programmingLanguageRequest)throws Exception {
+		if(!isIdExist(programmingLanguageRequest.getId())) {
+			throw new Exception("Güncellenmeye çalıştığınız :"+programmingLanguageRequest.getId()+" Id Bulunamadı !");}
+		
+		if(isNameBlank(programmingLanguageRequest.getName())) {
+			throw new Exception("Boş isim ile Ekleme Yapılamaz !");}
+		
+		// Optional JPA 'tarafından kullanılması gerektiği için yazıldı. Doğru kullanımın bu olduğu söylendi.Ömer hoca, Hanifi Hoca
+		 Optional<ProgrammingLanguage> programmingLanguage =programmingLanguageRepository.findById(programmingLanguageRequest.getId());
+		 programmingLanguage.get().setName(programmingLanguageRequest.getName());
+		 
+
+			
+		programmingLanguageRepository.save(programmingLanguage.get());	
 	}
+
 
 	
 
