@@ -24,10 +24,10 @@ public class ProgrammingTechnology {
 	@javax.persistence.Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "programming_technology_id")
-	private int Id;
+	private int id;
 
 	@Column(name= "programming_technology_name")
-	private String Name;
+	private String name;
 	
 	
 	@ManyToOne()
